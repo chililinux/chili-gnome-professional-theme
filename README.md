@@ -1,3 +1,3 @@
-# chili-pkgbuild-template
+# chili-gnome-professional-theme
 
-Template for Chili Linux packages
+chili-gnome-professional-theme
