@@ -7,7 +7,7 @@ depends=('capitaine-cursors' 'beauty-icon-theme' 'rsync' 'ncurses')
 #optdepends=('')
 #conflicts=('')
 #provides=('')
-#replaces=('')
+replaces=('chili-gnome-professional-theme')
 pkgver=$(date +%Y%m%d)
 pkgrel=$(date +%H%M)
 arch=('any')
@@ -18,8 +18,9 @@ source=(
 	"gnome-professional-40-dark.tar.zst"
 	"gnome-professional-solid-40.1-dark.tar.zst"
 	"Tokyonight-Dark-Theme.tar.zst"
+	"animal-painting2.avif"
 )
-sha256sums=(SKIP SKIP SKIP)
+sha256sums=(SKIP SKIP SKIP SKIP)
 
 # Automatically detect and use the correct install file
 if [ -e "${pkgname}.install" ]; then
