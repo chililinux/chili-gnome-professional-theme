@@ -44,5 +44,5 @@ package() {
 	tar -I zstd -xf "Tokyonight-Dark-Theme.tar.zst" --no-same-owner -C "${pkgdir}/usr/share/themes"
 
 	# Install wallpaper
-	#install -Dm644 "tokyonight1.avif" "${pkgdir}/usr/share/wallpapers/tokyonight1.avif"
+	install -Dm644 "animal-painting2.avif" "${pkgdir}/usr/share/wallpapers/animal-painting2.avif"
 }

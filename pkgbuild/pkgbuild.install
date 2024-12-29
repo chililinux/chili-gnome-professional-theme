@@ -213,7 +213,7 @@ post_install() {
 	# Cria um comando adicional baseado na condição
 	extra_commands=""
 	if [ "$DE" != "cinnamon" ]; then
-		extra_commands+="gsettings set org.$DE.desktop.background picture-uri-dark 'file:///usr/share/backgrounds/chililinux/animal-painting2.jpg'; "
+		extra_commands+="gsettings set org.$DE.desktop.background picture-uri-dark 'file:///usr/share/wallpapers/animal-painting2.avif'; "
 		extra_commands+="gsettings set org.$DE.shell.extensions.user-theme name 'Tokyonight-Dark-Theme'; "
 	fi
 
@@ -224,7 +224,7 @@ post_install() {
     gsettings set org.$DE.desktop.interface cursor-theme 'capitaine-cursors-light'; \
     gsettings set org.$DE.desktop.interface icon-theme 'BeautyFolders'; \
     gsettings set org.$DE.desktop.interface gtk-theme 'gnome-professional-solid-40.1-dark'; \
-    gsettings set org.$DE.desktop.background picture-uri 'file:///usr/share/backgrounds/chililinux/animal-painting2.jpg'; \
+    gsettings set org.$DE.desktop.background picture-uri 'file:///usr/share/wallpapers/animal-painting2.avif'; \
     $extra_commands
   "
 
