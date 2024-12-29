@@ -1,8 +1,8 @@
 # Maintainer: Vilmar Catafesta <vcatafesta@gmail.com>
 
-pkgname=chili-gnome-professional-theme
-pkgdesc="chili gnome professional theme"
-depends=('capitaine-cursors' 'chili-beauty-icon-theme' 'rsync' 'ncurses')
+pkgname=gnome-professional-theme
+pkgdesc="gnome professional theme"
+depends=('capitaine-cursors' 'beauty-icon-theme' 'rsync' 'ncurses')
 #makedepends=('')
 #optdepends=('')
 #conflicts=('')

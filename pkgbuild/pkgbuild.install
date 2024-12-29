@@ -45,7 +45,7 @@ export reset="\033[0m"
 declare APP="${0##*/}"
 
 # Get the username of the user running the package installation
-declare -g pkgname='chili-gnome-professional-theme'
+declare -g pkgname='gnome-professional-theme'
 declare -g user=$(logname)
 declare -g user_home=$(getent passwd "$user" | cut -d: -f6)
 declare -G DE='gnome'
