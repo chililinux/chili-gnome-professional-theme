@@ -34,7 +34,7 @@
 declare -g pkgname='chili-gnome-professional-theme'
 declare -g user=$(logname)
 declare -g user_home=$(getent passwd "$user" | cut -d: -f6)
-declare -G DE='cinnamon'
+declare -G DE='gnome'
 
 # Directories
 declare -g GTK3_DIR="$user_home/.config/gtk-3.0"
