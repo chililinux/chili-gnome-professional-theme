@@ -29,24 +29,6 @@
 #  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 #  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ##############################################################################
-
-# Get the username of the user running the package installation
-declare -g pkgname='chili-gnome-professional-theme'
-declare -g user=$(logname)
-declare -g user_home=$(getent passwd "$user" | cut -d: -f6)
-declare -G DE='gnome'
-
-# Directories
-declare -g GTK3_DIR="$user_home/.config/gtk-3.0"
-declare -g GTK4_DIR="$user_home/.config/gtk-4.0"
-declare -g THEMES_DIR="/usr/share/themes"
-declare -g BACKUP_DIR="$user_home/$pkgname.backup-settings"
-declare -g backup_file="$BACKUP_DIR/$pkgname-settings-backup.txt"
-
-#echo "user      - $user"
-#echo "user_home - $user_home"
-#echo "pkgname   - $pkgname"
-
 export TERM=${TERM:-xterm}
 export TERM=${TERM:-xterm-256color}
 
@@ -58,21 +40,45 @@ export blue="\033[01;34m"
 export pink="\033[01;35m"
 export cyan="\033[01;36m"
 export reset="\033[0m"
-alias ls='ls -lha --color=auto'
-alias dir='ls -lha --color=auto'
+
+#system
+declare APP="${0##*/}"
+
+# Get the username of the user running the package installation
+declare -g pkgname='chili-gnome-professional-theme'
+declare -g user=$(logname)
+declare -g user_home=$(getent passwd "$user" | cut -d: -f6)
+declare -G DE='gnome'
+declare -g quiet=true
+
+# Directories
+declare -g GTK3_DIR="$user_home/.config/gtk-3.0"
+declare -g GTK4_DIR="$user_home/.config/gtk-4.0"
+declare -g THEMES_DIR="/usr/share/themes"
+declare -g BACKUP_DIR="$user_home/$pkgname.backup-settings"
+declare -g backup_file="$BACKUP_DIR/$pkgname-settings-backup.txt"
+
+: <<'EOF'
+echo "user      - $user"
+echo "user_home - $user_home"
+echo "pkgname   - $pkgname"
+EOF
+
+MostraErro() {
+  echo "erro: ${red}$1${reset} => comando: ${cyan}'$2'${reset} => result=${yellow}$3${reset}"
+}
+trap 'MostraErro "$APP[$FUNCNAME][$LINENO]" "$BASH_COMMAND" "$?"; exit 1' ERR
 
 die() {
 	local msg="$1"
-	msg="$(sed 's/<[^>]*>//g' <<<"$msg")" # Remove as tags HTML
-	echo -e "=>${cyan}error: ${red}${msg}${reset}"
+	echo -e "==>${cyan}error: ${red}${msg}${reset}"
 	exit 1
 }
 export -f die
 
 msg_raw() {
 	local msg="$1"
-	# Remove tags HTML, se existirem
-	#msg="$(sed 's/<[^>]*>//g' <<< "$msg")"
+	#msg="$(sed 's/<[^>]*>//g' <<< "$msg")"	# Remove tags HTML, se existirem
 
 	# Verifica se existe ':' na mensagem
 	if [[ "$msg" == *:* ]]; then
@@ -91,32 +97,38 @@ export -f msg_raw
 
 msg() {
 	local msg="$1"
-	echo -e "=>${cyan}running: ${yellow}${msg}${reset}"
+	if ! $quiet; then
+		echo -e "==>${cyan}running: ${yellow}${msg}${reset}"
+	fi
 }
 export -f msg
 
 msg_ok() {
 	local msg="$1"
-	echo -e "=>${cyan}done: ${green}${msg}${reset}"
+	echo -e "==>${cyan}done   : ${green}${msg}${reset}"
 }
 export -f msg_ok
 
 msg_run() {
 	local msg="$1"
-	echo -e "=>${cyan}running: ${yellow}${msg}${reset}"
+	if ! $quiet; then
+		echo -e "==>${cyan}running: ${yellow}${msg}${reset}"
+	fi
 	eval "$msg"
 }
 export -f msg_run
 
 msg_info() {
 	local msg="$1"
-	echo -e "=>${yellow}info   : ${cyan}${msg}${reset}"
+	if ! $quiet; then
+		echo -e "==>${yellow}info   : ${cyan}${msg}${reset}"
+	fi
 }
 export -f msg_info
 
 msg_warning() {
 	local msg="$1"
-	echo -e "=>${red}warning: ${orange}${msg}${reset}"
+	echo -e "==>${red}warning: ${orange}${msg}${reset}"
 }
 export -f msg_warning
 
@@ -150,10 +162,8 @@ pre_install() {
 }
 
 post_install() {
-	msg "Applying Theme and configuring GTK..."
-
-	if [ -z "$user_home" ]; then
-		msg_warning "Could not determine the home directory for user $user. Skipping theme application."
+	if [[ -z "$user_home" ]]; then
+		msg_warning "Could not determine the home directory for user '$user'. Skipping theme application."
 		return 1
 	fi
 
@@ -167,7 +177,8 @@ post_install() {
 		#msg "Backing Up $dir to $BACKUP_DIR"
 		#run_as_user "tar -czf $backup_path -C $(dirname "$dir") $(basename "$dir")"
 	}
-  run_as_user "mkdir -p $BACKUP_DIR"
+	msg_info "Preparing backup of current configuration"
+	run_as_user "mkdir -p $BACKUP_DIR"
 	backup_directory "$GTK3_DIR"
 	backup_directory "$GTK4_DIR"
 
@@ -185,7 +196,7 @@ post_install() {
     } > \"$backup_file\"
   "
 
-	msg_info "Applying settings for user $user..."
+	msg_info "Applying settings for user '$user'..."
 	msg "Copying theme GTK files to $GTK3_DIR/"
 	run_as_user "mkdir -p $GTK3_DIR"
 	run_as_user "cp -Rpa $THEMES_DIR/gnome-professional-solid-40.1-dark/gtk-3.0/* $GTK3_DIR/"
@@ -206,7 +217,7 @@ post_install() {
 		extra_commands+="gsettings set org.$DE.shell.extensions.user-theme name 'Tokyonight-Dark-Theme'; "
 	fi
 
-	# Executa o comando
+	msg_info "Applying new user theme settings"
 	run_as_user "
     export DISPLAY=:0; \
     export DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/$(id -u $user)/bus; \
@@ -219,7 +230,7 @@ post_install() {
 
 	if [ $? -eq 0 ]; then
 		replicate '-'
-		msg_ok "Theme applied successfully for user $user!"
+		msg_ok "Theme applied successfully for user '$user'!"
 		replicate '-'
 	else
 		replicate '-'
@@ -238,7 +249,7 @@ post_remove() {
 	msg_info "Restoring default settings and cleaning GTK configurations..."
 
 	if [[ -z "$user_home" ]]; then
-		die "Could not determine the home directory for user $user. Skipping theme removal."
+		die "Could not determine the home directory for user '$user'. Skipping theme removal."
 		return 1
 	fi
 
@@ -249,20 +260,20 @@ post_remove() {
 			key=$(echo "$line" | awk '{print $2}')
 			value=$(echo "$line" | cut -d' ' -f3-)
 
-      run_as_user "
+			run_as_user "
         export DISPLAY=:0; \
         export DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/$(id -u "$user")/bus; \
         gsettings set $schema $key $value
       "
 		done <"$backup_file"
-		rm "$backup_file"
+		#rm "$backup_file"
 	else
 		msg_warning "No settings backup file found. Skipping restoration."
 	fi
 
 	msg_info "Restoring GTK configurations..."
-	run_as_user "rsync -Crazp $BACKUP_DIR/./config/gtk-3.0 $GTK3_DIR/"
-	run_as_user "rsync -Crazp $BACKUP_DIR/./config/gtk-4.0 $GTK4_DIR/"
+	run_as_user "rsync -Crazp $BACKUP_DIR/.config/gtk-3.0 $GTK3_DIR/"
+	run_as_user "rsync -Crazp $BACKUP_DIR/.config/gtk-4.0 $GTK4_DIR/"
 	msg_info "Default GNOME settings restored."
 }
 
