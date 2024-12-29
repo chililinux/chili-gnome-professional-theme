@@ -272,6 +272,8 @@ post_remove() {
 	fi
 
 	msg_info "Restoring GTK configurations..."
+	run_as_user "rm -rf $GTK3_DIR/"
+	run_as_user "rm -rf $GTK4_DIR/"
 	run_as_user "rsync -Crazp $BACKUP_DIR/.config/gtk-3.0 $GTK3_DIR/"
 	run_as_user "rsync -Crazp $BACKUP_DIR/.config/gtk-4.0 $GTK4_DIR/"
 	msg_info "Default GNOME settings restored."
