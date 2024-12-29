@@ -2,7 +2,7 @@
 
 pkgname=chili-gnome-professional-theme
 pkgdesc="chili gnome professional theme"
-depends=('chili-beauty-icon-theme')
+depends=('capitaine-cursors' 'chili-beauty-icon-theme' 'rsync' 'ncurses')
 #makedepends=('')
 #optdepends=('')
 #conflicts=('')
@@ -19,7 +19,7 @@ source=(
 	"gnome-professional-solid-40.1-dark.tar.zst"
 	"Tokyonight-Dark-Theme.tar.zst"
 )
-sha256sums=(SKIP SKIP)
+sha256sums=(SKIP SKIP SKIP)
 
 # Automatically detect and use the correct install file
 if [ -e "${pkgname}.install" ]; then
@@ -37,11 +37,11 @@ package() {
 	mkdir -p "${pkgdir}/usr/share/wallpapers"
 
 	# Extract themes and icons
-	#tar -I zstd -xf "Nordic-cursors.tar.zst" -C "${pkgdir}/usr/share/icons"
-	#tar -I zstd -xf "Tokyonight-Dark-Icons.tar.zst" -C "${pkgdir}/usr/share/icons"
-	tar -I zstd -xf "gnome-professional-40-dark.tar.zst" -C "${pkgdir}/usr/share/themes"
-	tar -I zstd -xf "gnome-professional-solid-40.1-dark.tar.zst" -C "${pkgdir}/usr/share/themes"
-	tar -I zstd -xf "Tokyonight-Dark-Theme.tar.zst" -C "${pkgdir}/usr/share/themes"
+	#tar -I zstd -xf "Nordic-cursors.tar.zst" --no-same-owner  -C "${pkgdir}/usr/share/icons"
+	#tar -I zstd -xf "Tokyonight-Dark-Icons.tar.zst" --no-same-owner -C "${pkgdir}/usr/share/icons"
+	tar -I zstd -xf "gnome-professional-40-dark.tar.zst" --no-same-owner -C "${pkgdir}/usr/share/themes"
+	tar -I zstd -xf "gnome-professional-solid-40.1-dark.tar.zst" --no-same-owner -C "${pkgdir}/usr/share/themes"
+	tar -I zstd -xf "Tokyonight-Dark-Theme.tar.zst" --no-same-owner -C "${pkgdir}/usr/share/themes"
 
 	# Install wallpaper
 	#install -Dm644 "tokyonight1.avif" "${pkgdir}/usr/share/wallpapers/tokyonight1.avif"
